@@ -1,0 +1,728 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<title>The Cabinet — Skincare Routines</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Source+Sans+3:wght@400;500;600;700&family=Space+Mono&display=swap');
+
+:root{
+  --paper:#f6f1e7;
+  --ink:#241f1a;
+  --ink-soft:#5c5347;
+  --line:#ddd3c0;
+  --cleanse:#3f5346;
+  --tone:#8a3b57;
+  --treat:#4a3266;
+  --brighten:#b0472e;
+  --hydrate:#1f5a68;
+  --seal:#96660f;
+  --card:#fffdf8;
+  --shadow:0 1px 2px rgba(36,31,26,0.06);
+}
+*{box-sizing:border-box;}
+html,body{margin:0;padding:0;background:var(--paper);color:var(--ink);font-family:'Source Sans 3',sans-serif;-webkit-font-smoothing:antialiased;}
+body{padding-bottom:60px;}
+
+.topbar{
+  position:sticky;top:0;z-index:20;
+  background:var(--paper);
+  border-bottom:1px solid var(--line);
+  padding:14px 16px 10px;
+}
+.brand{
+  font-family:'Fraunces',serif;
+  font-size:22px;
+  font-weight:600;
+  letter-spacing:0.01em;
+  display:flex;align-items:baseline;gap:8px;
+}
+.brand .sub{
+  font-family:'Space Mono',monospace;
+  font-size:10px;
+  color:var(--ink-soft);
+  text-transform:uppercase;
+  letter-spacing:0.12em;
+}
+
+.daypicker{
+  display:flex;gap:6px;overflow-x:auto;
+  margin-top:12px;
+  padding-bottom:2px;
+  -webkit-overflow-scrolling:touch;
+  scrollbar-width:none;
+}
+.daypicker::-webkit-scrollbar{display:none;}
+.day-btn{
+  flex:0 0 auto;
+  font-family:'Space Mono',monospace;
+  font-size:11px;
+  letter-spacing:0.06em;
+  text-transform:uppercase;
+  padding:7px 12px;
+  border-radius:999px;
+  border:1px solid var(--line);
+  background:var(--card);
+  color:var(--ink-soft);
+  cursor:pointer;
+}
+.day-btn.active{
+  background:var(--ink);
+  color:var(--paper);
+  border-color:var(--ink);
+}
+
+.periodpicker{
+  display:flex;gap:8px;margin-top:10px;
+}
+.period-btn{
+  flex:1;
+  font-family:'Fraunces',serif;
+  font-size:14px;
+  font-weight:500;
+  padding:8px;
+  border-radius:8px;
+  border:1px solid var(--line);
+  background:var(--card);
+  color:var(--ink-soft);
+  cursor:pointer;
+  text-align:center;
+}
+.period-btn.active{
+  background:var(--ink);
+  color:var(--paper);
+  border-color:var(--ink);
+}
+
+.cardwrap{padding:16px;max-width:640px;margin:0 auto;}
+.cardhead{margin-bottom:14px;}
+.theme{
+  font-family:'Fraunces',serif;
+  font-size:26px;
+  font-weight:600;
+  line-height:1.1;
+}
+.goal{
+  font-size:13px;
+  color:var(--ink-soft);
+  margin-top:6px;
+  line-height:1.4;
+}
+.goal b{
+  font-family:'Space Mono',monospace;
+  font-size:10px;
+  letter-spacing:0.1em;
+  color:var(--ink);
+  margin-right:6px;
+}
+
+.rail{
+  display:flex;
+  gap:12px;
+}
+.rail-track{
+  width:14px;
+  flex:0 0 14px;
+  position:relative;
+}
+.rail-line{
+  position:absolute;left:6px;top:8px;bottom:8px;width:1.5px;
+  background:var(--line);
+}
+.steps{flex:1;display:flex;flex-direction:column;gap:10px;}
+
+.step{
+  background:var(--card);
+  border-radius:10px;
+  border:1px solid var(--line);
+  padding:11px 13px;
+  box-shadow:var(--shadow);
+  position:relative;
+}
+.step::before{
+  content:'';
+  position:absolute;left:-19px;top:16px;
+  width:8px;height:8px;border-radius:50%;
+  background:var(--dot,var(--ink-soft));
+  border:2px solid var(--paper);
+}
+.step[data-cat="cleanse"]{--dot:var(--cleanse); border-left:3px solid var(--cleanse);}
+.step[data-cat="tone"]{--dot:var(--tone); border-left:3px solid var(--tone);}
+.step[data-cat="treat"]{--dot:var(--treat); border-left:3px solid var(--treat);}
+.step[data-cat="brighten"]{--dot:var(--brighten); border-left:3px solid var(--brighten);}
+.step[data-cat="hydrate"]{--dot:var(--hydrate); border-left:3px solid var(--hydrate);}
+.step[data-cat="seal"]{--dot:var(--seal); border-left:3px solid var(--seal);}
+
+.step-row{display:flex;justify-content:space-between;align-items:baseline;gap:8px;}
+.step-name{font-weight:600;font-size:14.5px;}
+.step-tag{
+  font-family:'Space Mono',monospace;
+  font-size:9.5px;
+  color:var(--ink-soft);
+  white-space:nowrap;
+  text-transform:uppercase;
+  letter-spacing:0.03em;
+}
+.step-product{
+  font-size:13.5px;
+  color:var(--ink-soft);
+  margin-top:4px;
+  line-height:1.4;
+  cursor:pointer;
+  border-bottom:1px dashed transparent;
+}
+.step-product:active{border-bottom-color:var(--ink-soft);}
+.step-note{
+  font-size:12px;
+  color:var(--ink-soft);
+  margin-top:6px;
+  line-height:1.4;
+  padding-top:6px;
+  border-top:1px dashed var(--line);
+}
+.step-note b{color:var(--ink);}
+
+.step-controls{
+  display:flex;gap:6px;
+  margin-top:8px;
+  padding-top:8px;
+  border-top:1px dashed var(--line);
+}
+.step-ctrl-btn{
+  font-family:'Space Mono',monospace;
+  font-size:11px;
+  padding:5px 9px;
+  border-radius:6px;
+  border:1px solid var(--line);
+  background:var(--paper);
+  color:var(--ink-soft);
+  cursor:pointer;
+}
+.step-ctrl-btn:disabled{
+  opacity:0.3;
+  cursor:default;
+}
+.step-ctrl-btn:not(:disabled):active{
+  background:var(--line);
+}
+.step-delete-btn{
+  margin-left:auto;
+  color:var(--tone);
+  border-color:var(--tone);
+}
+
+.legend{
+  display:flex;flex-wrap:wrap;gap:10px;
+  margin:18px 0 6px;
+  padding:10px 12px;
+  background:var(--card);
+  border:1px solid var(--line);
+  border-radius:10px;
+}
+.legend-item{display:flex;align-items:center;gap:5px;font-size:10.5px;color:var(--ink-soft);font-family:'Space Mono',monospace;text-transform:uppercase;letter-spacing:0.04em;}
+.legend-dot{width:7px;height:7px;border-radius:50%;}
+
+.editbar{
+  position:fixed;bottom:0;left:0;right:0;
+  background:var(--card);
+  border-top:1px solid var(--line);
+  padding:10px 12px calc(10px + env(safe-area-inset-bottom));
+  display:flex;gap:6px;
+  z-index:30;
+}
+.editbtn{
+  flex:1;
+  font-family:'Space Mono',monospace;
+  font-size:10px;
+  letter-spacing:0.03em;
+  text-transform:uppercase;
+  padding:10px 4px;
+  border-radius:8px;
+  border:1px solid var(--ink);
+  background:var(--ink);
+  color:var(--paper);
+  cursor:pointer;
+  white-space:nowrap;
+}
+.editbtn.secondary{
+  background:var(--card);
+  color:var(--ink);
+}
+
+.modal-overlay{
+  position:fixed;inset:0;background:rgba(36,31,26,0.5);
+  z-index:40;display:none;align-items:flex-end;justify-content:center;
+}
+.modal-overlay.open{display:flex;}
+.modal{
+  background:var(--paper);
+  width:100%;max-width:640px;
+  border-radius:16px 16px 0 0;
+  padding:18px 18px calc(18px + env(safe-area-inset-bottom));
+  max-height:80vh;overflow-y:auto;
+}
+.modal h3{
+  font-family:'Fraunces',serif;font-size:18px;font-weight:600;margin:0 0 4px;
+}
+.modal .modal-sub{font-size:12px;color:var(--ink-soft);margin-bottom:14px;}
+.modal input, .modal select{
+  width:100%;
+  font-family:'Source Sans 3',sans-serif;
+  font-size:15px;
+  padding:10px 12px;
+  border-radius:8px;
+  border:1px solid var(--line);
+  background:var(--card);
+  color:var(--ink);
+  margin-bottom:10px;
+}
+.modal-actions{display:flex;gap:10px;margin-top:6px;}
+.modal-actions button{
+  flex:1;
+  font-family:'Space Mono',monospace;
+  font-size:11px;letter-spacing:0.06em;text-transform:uppercase;
+  padding:11px;border-radius:8px;border:1px solid var(--ink);cursor:pointer;
+}
+.btn-primary{background:var(--ink);color:var(--paper);}
+.btn-secondary{background:transparent;color:var(--ink);}
+
+.scope-choice{
+  display:flex;flex-direction:column;gap:8px;margin-bottom:12px;
+}
+.scope-opt{
+  display:flex;align-items:flex-start;gap:8px;
+  padding:10px;border:1px solid var(--line);border-radius:8px;
+  background:var(--card);cursor:pointer;font-size:13px;
+}
+.scope-opt.selected{border-color:var(--ink);background:#fbf7ee;}
+.scope-opt b{display:block;font-size:13px;margin-bottom:2px;}
+.scope-opt span{font-size:11.5px;color:var(--ink-soft);}
+
+.registrylist{margin-top:8px;}
+.reg-item{
+  display:flex;justify-content:space-between;align-items:center;
+  padding:9px 0;border-bottom:1px solid var(--line);font-size:13px;
+}
+.reg-item .rcount{font-family:'Space Mono',monospace;font-size:10px;color:var(--ink-soft);}
+.close-x{
+  position:absolute;top:14px;right:16px;
+  font-family:'Space Mono',monospace;font-size:20px;color:var(--ink-soft);
+  cursor:pointer;line-height:1;
+}
+.footnote{
+  text-align:center;font-size:11px;color:var(--ink-soft);
+  margin-top:20px;font-family:'Space Mono',monospace;
+}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="brand">The Cabinet <span class="sub">Skincare Routines</span></div>
+  <div class="daypicker" id="daypicker"></div>
+  <div class="periodpicker" id="periodpicker"></div>
+</div>
+
+<div class="cardwrap">
+  <div class="cardhead">
+    <div class="theme" id="theme"></div>
+    <div class="goal" id="goal"></div>
+  </div>
+  <div class="rail">
+    <div class="rail-track"><div class="rail-line"></div></div>
+    <div class="steps" id="steps"></div>
+  </div>
+  <div class="legend" id="legend"></div>
+  <div class="footnote">Tap any product name to edit it — everywhere it appears, or just here.</div>
+</div>
+
+<div class="editbar">
+  <button class="editbtn secondary" id="functionBtn">By Function</button>
+  <button class="editbtn secondary" id="registryBtn">Product Index</button>
+  <button class="editbtn" id="resetBtn">Reset to Default</button>
+</div>
+
+<div class="modal-overlay" id="functionOverlay">
+  <div class="modal">
+    <div class="close-x" id="functionClose">&times;</div>
+    <h3>Browse by Function</h3>
+    <div class="modal-sub">What each product actually does for your skin, grouped by job.</div>
+    <div id="functionTabs" style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:14px;"></div>
+    <div id="functionList"></div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="editOverlay">
+  <div class="modal">
+    <div class="close-x" id="editClose">&times;</div>
+    <h3>Edit Product</h3>
+    <div class="modal-sub" id="editStepLabel"></div>
+    <input type="text" id="editInput" />
+    <div class="scope-choice" id="scopeChoice"></div>
+    <div class="modal-actions">
+      <button class="btn-secondary" id="editCancel">Cancel</button>
+      <button class="btn-primary" id="editSave">Save</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="registryOverlay">
+  <div class="modal">
+    <div class="close-x" id="registryClose">&times;</div>
+    <h3>Product Index</h3>
+    <div class="modal-sub">Every product currently in use, and how many steps reference it.</div>
+    <div class="registrylist" id="registryList"></div>
+  </div>
+</div>
+
+<script>
+const DEFAULT_DATA = {"mon-am": {"day": "Monday", "period": "AM", "theme": "Glow Morning", "goal": "Enhance radiance, even skin tone & clarity \u2014 protect with antioxidants and hydration.", "steps": [{"category": "cleanse", "name": "Rinse", "tag": "Cleanse", "product": "Rinse with lukewarm water \u2014 cleansing wipe or gentle cleanser if needed", "notes": []}, {"category": "treat", "name": "Exosome Serum", "tag": "Treat \u00b7 15\u201330s", "product": "Exosome Hydro Glow Complex", "notes": []}, {"category": "treat", "name": "Vitamin C", "tag": "Treat \u00b7 15\u201330s", "product": "Prequel Lucent-C as your everyday default \u2014 or Remedy Vitamin C for a lighter feel \u2014 or Medicube Deep Vita-C for extra strength", "notes": []}, {"category": "hydrate", "name": "Mist", "tag": "Hydrate \u00b7 15\u201330s", "product": "Biodance Collagen Peptides Jelly Serum Mist (default) \u2014 or COSRX Ceramide (Hydrium) Mist \u2014 or Klairs Ampoule Mist", "notes": ["<b>+ Tip:</b> Any of these mists are gentle enough to reapply over makeup during the day."]}, {"category": "tone", "name": "Brightening Toner", "tag": "Tone \u00b7 15\u201330s", "product": "Acwell Licorice pH Balancing", "notes": []}, {"category": "tone", "name": "Hyaluronic Toner", "tag": "Tone \u00b7 15\u201330s", "product": "Haruharu Wonder Black Rice Hyaluronic Toner", "notes": []}, {"category": "brighten", "name": "Vitamin Essence", "tag": "Brighten \u00b7 15\u201330s", "product": "Klairs Freshly Juiced Vitamin Essence", "notes": []}, {"category": "tone", "name": "Centella Toner", "tag": "Tone \u00b7 15\u201330s", "product": "Centellian24 Madeca Dailypair Toner \u2014 milky", "notes": []}, {"category": "hydrate", "name": "Barrier Essence", "tag": "Hydrate \u00b7 15\u201330s", "product": "Manyo Panthetoin Barrier Essence", "notes": []}, {"category": "hydrate", "name": "Hydration Layer", "tag": "Hydrate \u00b7 15\u201330s", "product": "iUNIK Beta-Glucan Power Moisture Serum", "notes": []}, {"category": "brighten", "name": "Brightening Serum", "tag": "Brighten \u00b7 15\u201330s", "product": "Anua Niacinamide + TXA (default)", "notes": ["<b>+ Optional:</b> Caudalie Vinoperfect"]}, {"category": "brighten", "name": "Hydration / Elasticity Serum", "tag": "Brighten \u00b7 15\u201330s", "product": "Anua PDRN + HA", "notes": []}, {"category": "brighten", "name": "Nourishing Serum", "tag": "Brighten \u00b7 15\u201330s", "product": "Mixsoon Soybean Milk Serum", "notes": []}, {"category": "seal", "name": "Eye Cream", "tag": "Seal \u00b7 30s", "product": "Belif Aqua Bomb Eye Gel \u2014 or Dr. Melaxin Eye Brightening Cream", "notes": []}, {"category": "seal", "name": "Moisturizer", "tag": "Seal \u00b7 1min", "product": "Prequel AM/PM Modern Moisturizer", "notes": []}, {"category": "seal", "name": "SPF", "tag": "Seal \u00b7 1min", "product": "Use your preferred SPF", "notes": []}]}, "mon-pm": {"day": "Monday", "period": "PM", "theme": "Growth Factors Night", "goal": "Support regeneration & collagen renewal \u2014 growth factors, advanced actives.", "steps": [{"category": "cleanse", "name": "Double Cleanse", "tag": "Cleanse \u00b7 60\u201390s", "product": "Oil cleanser, balm, or cleansing wipe, then gentle cleanser \u2014 or Anua Quercetinol for gentle exfoliation", "notes": ["<b>+ Optional:</b> INIA Tighten during water cleanse \u2014 5 min, Level 1 to start. Never same day as Lift."]}, {"category": "treat", "name": "Cell Renewal", "tag": "Treat \u00b7 2min", "product": "Jiyu Skin Cell Renewal Pad \u2014 or Dermalogica Daily Microfoliant (activate with water on damp skin)", "notes": ["Skip if you have an active inflamed breakout."]}, {"category": "hydrate", "name": "Mist", "tag": "Hydrate \u00b7 15\u201330s", "product": "Biodance Collagen Peptides Jelly Serum Mist \u2014 or COSRX Ceramide (Hydrium) Mist \u2014 or Klairs Ampoule Mist \u2014 or Dr. Althea 345 Relief Mist", "notes": []}, {"category": "tone", "name": "Toner", "tag": "Tone \u00b7 15\u201330s", "product": "I'm From Rice Toner \u2014 and Anua Heartleaf 77% Soothing Toner", "notes": []}, {"category": "tone", "name": "Milky Toner", "tag": "Tone \u00b7 15\u201330s", "product": "HaruHaru Probiotics Essence \u2014 or Medicube PDRN Pink Milky Toner", "notes": []}, {"category": "treat", "name": "Azelaic Acid", "tag": "Treat \u00b7 15\u201330s", "product": "Anua Azelaic Acid", "notes": []}, {"category": "treat", "name": "Growth Factor Serum", "tag": "Treat \u00b7 30\u201360s", "product": "Week 1 & 3: DRMTLGY Needle-less \u2014 or Week 2 & 4: Klairs EGF", "notes": ["Rotates weekly: Wk1\u2192DRMTLGY, Wk2\u2192Klairs EGF, Wk3\u2192DRMTLGY, Wk4\u2192Klairs EGF.", "<b>+ Tip:</b> On Klairs EGF weeks, apply right after Cell Renewal (step 02) instead of here.", "<b>+ Device:</b> INIA Infuse mode right after, if using Tighten tonight."]}, {"category": "hydrate", "name": "Barrier Essence", "tag": "Hydrate \u00b7 15\u201330s", "product": "Manyo Panthetoin Barrier Essence", "notes": []}, {"category": "hydrate", "name": "Snail Mucin Essence", "tag": "Hydrate \u00b7 15\u201330s", "product": "COSRX Advanced Snail 96 Mucin Power Essence", "notes": []}, {"category": "treat", "name": "Treatment Serum", "tag": "Treat \u00b7 30\u201360s", "product": "Est\u00e9e Lauder ANR", "notes": []}, {"category": "seal", "name": "Eye Cream", "tag": "Seal \u00b7 30s", "product": "Medicube PDRN Pink Peptide Eye Cream", "notes": []}, {"category": "seal", "name": "Moisturizer", "tag": "Seal \u00b7 1\u20132min", "product": "Madeca Time Reverse", "notes": []}, {"category": "seal", "name": "Lip Mask", "tag": "Seal \u00b7 optional \u00b7 last step", "product": "Use a lip mask or balm of your choice, if desired", "notes": []}]}, "tue-am": {"day": "Tuesday", "period": "AM", "theme": "Firming Morning", "goal": "Promote firmness, boost elasticity & collagen \u2014 protect with antioxidants, stay hydrated and resilient.", "steps": [{"category": "cleanse", "name": "Rinse", "tag": "Cleanse \u00b7 20\u201360s", "product": "Rinse with lukewarm water \u2014 cleansing wipe or gentle cleanser if needed", "notes": []}, {"category": "treat", "name": "Vitamin C", "tag": "Treat \u00b7 30\u201360s", "product": "Prequel Lucent-C as your everyday default \u2014 or Remedy Vitamin C for a lighter feel \u2014 or Medicube Deep Vita-C for extra strength", "notes": []}, {"category": "hydrate", "name": "Mist", "tag": "Hydrate \u00b7 15\u201330s", "product": "Biodance Collagen Peptides Jelly Serum Mist (default) \u2014 or COSRX Ceramide (Hydrium) Mist \u2014 or Klairs Ampoule Mist", "notes": []}, {"category": "tone", "name": "Toner 1 \u2014 Hydrating", "tag": "Tone \u00b7 15\u201330s", "product": "Numbuzin NAD+ PDRN Toner", "notes": []}, {"category": "tone", "name": "Toner 2 \u2014 Hydrating", "tag": "Tone \u00b7 15\u201330s", "product": "Haruharu Wonder Black Rice Hyaluronic Toner \u2014 and Klairs Supple Preparation Unscented Toner", "notes": []}, {"category": "tone", "name": "Centella Toner", "tag": "Tone \u00b7 15\u201330s", "product": "Centellian24 Madeca Dailypair Toner \u2014 milky", "notes": []}, {"category": "tone", "name": "Toner 3 \u2014 Hydrating", "tag": "Tone \u00b7 15\u201330s", "product": "Manyo Panthetoin Toner \u2014 or HaruHaru Probiotics Essence \u2014 or Medicube PDRN Pink Milky Toner", "notes": []}, {"category": "hydrate", "name": "Essence / Hydration", "tag": "Hydrate \u00b7 15\u201330s", "product": "Numbuzin Bio Lifting-sil", "notes": []}, {"category": "hydrate", "name": "Hydration Essence", "tag": "Hydrate \u00b7 15\u201330s", "product": "Mixsoon Bean Essence", "notes": []}, {"category": "treat", "name": "Brightening Serum", "tag": "Treat \u00b7 15\u201330s", "product": "Anua Niacinamide + TXA", "notes": []}, {"category": "treat", "name": "Firming Serum", "tag": "Treat \u00b7 30\u201360s", "product": "Medicube Triple Collagen (default) \u2014 or Mixsoon PDRN Collagen Serum", "notes": []}, {"category": "treat", "name": "Elasticity Serum", "tag": "Treat \u00b7 30\u201360s", "product": "Medicube Pink PDRN Peptide Serum \u2014 or Medicube One Day PDRN Ampoule", "notes": []}, {"category": "seal", "name": "Eye Cream", "tag": "Seal \u00b7 30s", "product": "Dr. Melaxin Eye Brightening Cream", "notes": []}, {"category": "seal", "name": "Moisturizer", "tag": "Seal \u00b7 1\u20132min", "product": "Medicube Triple Collagen Moisturizer", "notes": []}, {"category": "seal", "name": "SPF", "tag": "Seal \u00b7 1\u20132min", "product": "Use your preferred SPF", "notes": []}]}, "tue-pm": {"day": "Tuesday", "period": "PM", "theme": "Retinal Night", "goal": "Support skin renewal & healthy aging with retinal \u2014 protect your barrier, improve texture and fine lines.", "steps": [{"category": "cleanse", "name": "Double Cleanse", "tag": "Cleanse", "product": "Anua Heartleaf Cleansing Oil, balm, or cleansing wipe, then Mixsoon Cream Cleanser \u2014 or Haruharu Black Rice Cleanser", "notes": []}, {"category": "hydrate", "name": "Caudalie Mist", "tag": "Hydrate \u00b7 7s", "product": "Caudalie Grape Water \u2014 spray on damp skin right after cleansing, before anything else", "notes": []}, {"category": "tone", "name": "Calming Toner", "tag": "Tone", "product": "I'm From Mugwort Toner \u2014 and Anua Heartleaf 77% Soothing Toner", "notes": []}, {"category": "treat", "name": "Growth Factors", "tag": "Treat \u00b7 15\u201330s", "product": "The Ordinary GF15", "notes": []}, {"category": "tone", "name": "Centella Toner", "tag": "Tone \u00b7 15\u201330s", "product": "Centellian24 Madeca Dailypair Toner \u2014 milky", "notes": []}, {"category": "hydrate", "name": "Snail Mucin Essence", "tag": "Hydrate \u00b7 15\u201330s", "product": "COSRX Advanced Snail 96 Mucin Power Essence", "notes": []}, {"category": "treat", "name": "Retinal", "tag": "Treat", "product": "Prequel Retinal Renew Gel \u2014 or Remedy Healthy Aging Serum (retinol + retinaldehyde)", "notes": ["<b>+ Tip:</b> \"retinal sandwich\" \u2014 a thin layer of moisturizer first if skin feels dry.", "<b>+ Tip:</b> skip tonight if skin is irritated from dermaplaning or exfoliation."]}, {"category": "treat", "name": "Exosome Serum", "tag": "Treat \u00b7 15\u201330s", "product": "Exosome Hydro Glow Complex", "notes": []}, {"category": "hydrate", "name": "Barrier Support", "tag": "Hydrate", "product": "Manyo Panthetoin Barrier Essence", "notes": []}, {"category": "seal", "name": "Eye Cream", "tag": "Seal", "product": "Numbuzin No.9 NAD+ Retinol Volumetox Eye Cream (default) \u2014 or Medicube PDRN Pink Peptide Eye Cream \u2014 or COSRX Snail Mucin Eye Cream", "notes": []}, {"category": "seal", "name": "Moisturizer", "tag": "Seal", "product": "Prequel Barrier Therapy", "notes": ["<b>+ Optional:</b> The Ordinary Rice Lipids last, to seal in if skin feels extra dry."]}, {"category": "treat", "name": "Neck & Jawline", "tag": "Treat \u00b7 optional", "product": "Anua Collagen Retinol Refining Gua Sha Cream", "notes": ["Neck, jawline & d\u00e9collet\u00e9 only \u2014 not for the face. Start 2\u20133x/week."]}, {"category": "seal", "name": "Lip Mask", "tag": "Seal \u00b7 optional \u00b7 last step", "product": "Use a lip mask or balm of your choice, if desired", "notes": []}]}, "wed-am": {"day": "Wednesday", "period": "AM", "theme": "Recovery Morning", "goal": "Barrier support, recovery & hydration \u2014 calm skin, healthy aging.", "steps": [{"category": "cleanse", "name": "Rinse", "tag": "Cleanse", "product": "Rinse with lukewarm water \u2014 cleansing wipe or gentle cleanser if needed", "notes": []}, {"category": "treat", "name": "Vitamin C", "tag": "Treat \u00b7 60s", "product": "Prequel Lucent-C as your everyday default \u2014 or Remedy Vitamin C for a lighter feel \u2014 or Medicube Deep Vita-C for extra strength", "notes": []}, {"category": "hydrate", "name": "Mist", "tag": "Hydrate \u00b7 15\u201330s", "product": "Biodance Collagen Peptides Jelly Serum Mist (default) \u2014 or COSRX Ceramide (Hydrium) Mist \u2014 or Klairs Ampoule Mist", "notes": []}, {"category": "tone", "name": "Toner", "tag": "Tone \u00b7 15\u201330s", "product": "I'm From Mugwort Toner", "notes": []}, {"category": "tone", "name": "Hyaluronic Toner", "tag": "Tone \u00b7 15\u201330s", "product": "Haruharu Wonder Black Rice Hyaluronic Toner", "notes": []}, {"category": "tone", "name": "Centella Toner", "tag": "Tone \u00b7 15\u201330s", "product": "Centellian24 Madeca Dailypair Toner \u2014 milky", "notes": []}, {"category": "tone", "name": "Milky Toner", "tag": "Tone \u00b7 15\u201330s", "product": "Medicube PDRN Pink Milky Toner", "notes": []}, {"category": "hydrate", "name": "Barrier Essence", "tag": "Hydrate \u00b7 30s", "product": "Manyo Panthetoin Barrier Essence", "notes": []}, {"category": "hydrate", "name": "Hydration Serum", "tag": "Hydrate", "product": "Anua PDRN + HA", "notes": []}, {"category": "treat", "name": "Calming Serum", "tag": "Treat", "product": "SKIN1004 Centella Ampoule", "notes": []}, {"category": "treat", "name": "Recovery Serum", "tag": "Treat", "product": "Inkey Exosome Serum", "notes": []}, {"category": "seal", "name": "Eye Cream", "tag": "Seal", "product": "Belif Aqua Bomb Eye Gel \u2014 or Dr. Melaxin Eye Cream", "notes": []}, {"category": "seal", "name": "Moisturizer", "tag": "Seal \u00b7 if needed", "product": "Dr. Althea 345 Relief Cream", "notes": []}, {"category": "seal", "name": "SPF", "tag": "Seal", "product": "Use your preferred SPF", "notes": []}]}, "wed-pm": {"day": "Wednesday", "period": "PM", "theme": "Recovery Night", "goal": "Calm irritation, restore hydration & strengthen your skin barrier while you sleep.", "steps": [{"category": "cleanse", "name": "Double Cleanse", "tag": "Cleanse", "product": "Anua Oil Cleanser, balm, or cleansing wipe \u2192 Mixsoon Cream Cleanser \u2014 or Haruharu Black Rice if heavier makeup", "notes": []}, {"category": "hydrate", "name": "Caudalie Mist", "tag": "Hydrate \u00b7 7s", "product": "Caudalie Grape Water \u2014 spray on damp skin right after cleansing, before anything else", "notes": []}, {"category": "hydrate", "name": "Recovery Mist", "tag": "Hydrate \u00b7 15\u201330s", "product": "Dear Klairs Blue EGF Calming Mist", "notes": []}, {"category": "hydrate", "name": "Mist", "tag": "Hydrate \u00b7 15\u201330s", "product": "Dr. Althea 345 Relief Cream Mist (default) \u2014 or Biodance Jelly Serum Mist \u2014 or COSRX Ceramide Mist", "notes": []}, {"category": "tone", "name": "Toner", "tag": "Tone \u00b7 15\u201330s", "product": "I'm From Mugwort Toner", "notes": []}, {"category": "tone", "name": "Centella Toner", "tag": "Tone \u00b7 15\u201330s", "product": "Centellian24 Madeca Dailypair Toner \u2014 milky", "notes": []}, {"category": "tone", "name": "Hydrating Toner", "tag": "Tone \u00b7 15\u201330s", "product": "Medicube PDRN Pink Milky Toner (default) \u2014 or HaruHaru Probiotics Essence", "notes": []}, {"category": "hydrate", "name": "Barrier Essence", "tag": "Hydrate \u00b7 15\u201330s", "product": "Manyo Panthetoin Barrier Essence", "notes": []}, {"category": "treat", "name": "Hydrating Serum", "tag": "Treat \u00b7 30\u201360s", "product": "Medicube Triple Collagen Serum", "notes": []}, {"category": "treat", "name": "Recovery Serum", "tag": "Treat \u00b7 30\u201360s", "product": "Est\u00e9e Lauder ANR", "notes": []}, {"category": "seal", "name": "Eye Cream", "tag": "Seal \u00b7 30s", "product": "Medicube PDRN Pink Peptide Eye Cream", "notes": []}, {"category": "seal", "name": "Moisturizer", "tag": "Seal \u00b7 1min", "product": "Dr. Althea 345 Relief Cream", "notes": []}, {"category": "seal", "name": "Barrier Boost", "tag": "Seal \u00b7 if dry \u00b7 30s", "product": "COSRX Snail Mucin Cream", "notes": []}, {"category": "seal", "name": "Rice Lipids", "tag": "Seal \u00b7 if dry", "product": "The Ordinary Rice Lipids \u2014 to seal in if skin feels extra dry", "notes": []}, {"category": "seal", "name": "Lip Mask", "tag": "Seal \u00b7 optional \u00b7 last step", "product": "Use a lip mask or balm of your choice, if desired", "notes": []}]}, "thu-am": {"day": "Thursday", "period": "AM", "theme": "Glow Morning", "goal": "Support radiance, antioxidant protection & healthy aging \u2014 daily maintenance.", "steps": [{"category": "cleanse", "name": "Rinse", "tag": "Cleanse \u00b7 15\u201330s", "product": "Rinse with lukewarm water \u2014 cleansing wipe or gentle cleanser if needed", "notes": []}, {"category": "treat", "name": "Exosome Serum", "tag": "Treat \u00b7 15\u201330s", "product": "Exosome Hydro Glow Complex", "notes": []}, {"category": "treat", "name": "Vitamin C", "tag": "Treat \u00b7 15\u201330s", "product": "Prequel Lucent-C as your everyday default \u2014 or Remedy Vitamin C for a lighter feel \u2014 or Medicube Deep Vita-C for extra strength", "notes": []}, {"category": "hydrate", "name": "Mist", "tag": "Hydrate \u00b7 15\u201330s", "product": "Biodance Collagen Peptides Jelly Serum Mist (default) \u2014 or COSRX Ceramide (Hydrium) Mist \u2014 or Klairs Ampoule Mist", "notes": []}, {"category": "tone", "name": "Brightening Toner", "tag": "Tone \u00b7 15\u201330s", "product": "I'm From Rice Toner \u2014 and Anua Heartleaf 77% Soothing Toner", "notes": []}, {"category": "brighten", "name": "Vitamin Essence", "tag": "Brighten \u00b7 15\u201330s", "product": "Klairs Freshly Juiced Vitamin Essence", "notes": []}, {"category": "tone", "name": "Centella Toner", "tag": "Tone \u00b7 15\u201330s", "product": "Centellian24 Madeca Dailypair Toner \u2014 milky", "notes": []}, {"category": "hydrate", "name": "Barrier Essence", "tag": "Hydrate \u00b7 15\u201330s", "product": "Manyo Panthetoin Barrier Essence", "notes": []}, {"category": "treat", "name": "Growth Factor Serum", "tag": "Treat \u00b7 15\u201330s", "product": "The Ordinary GF15", "notes": []}, {"category": "hydrate", "name": "Hydration / Essence", "tag": "Hydrate \u00b7 15\u201330s", "product": "iUNIK Beta-Glucan Power Moisture Serum", "notes": []}, {"category": "hydrate", "name": "Hydrating Serum", "tag": "Hydrate \u00b7 15\u201330s", "product": "Anua PDRN + HA", "notes": []}, {"category": "hydrate", "name": "Nourishing Serum", "tag": "Hydrate \u00b7 15\u201330s", "product": "Mixsoon Soybean Milk Serum", "notes": []}, {"category": "seal", "name": "Eye Cream", "tag": "Seal \u00b7 30s", "product": "Medicube PDRN Pink Peptide Eye Cream \u2014 or Dr. Melaxin Eye Brightening Cream", "notes": []}, {"category": "seal", "name": "Moisturizer", "tag": "Seal \u00b7 1\u20132min", "product": "Prequel AM/PM Modern Moisturizer", "notes": []}, {"category": "seal", "name": "SPF", "tag": "Seal \u00b7 as needed", "product": "Use your preferred SPF", "notes": []}]}, "thu-pm": {"day": "Thursday", "period": "PM", "theme": "Growth Factors Night", "goal": "Support regeneration, boost collagen & repair barrier \u2014 growth factors, advanced actives.", "steps": [{"category": "cleanse", "name": "Double Cleanse", "tag": "Cleanse \u00b7 60\u201390s", "product": "Anua Oil Cleanser, balm, or cleansing wipe, then Haruharu Cleanser \u2014 or Medicube Whipped Cleanser", "notes": ["<b>+ Optional:</b> INIA Tighten during water cleanse \u2014 5 min, Level 1 to start. Never same day as Lift."]}, {"category": "hydrate", "name": "Caudalie Mist", "tag": "Hydrate \u00b7 7s", "product": "Caudalie Grape Water \u2014 spray on damp skin right after cleansing, before anything else", "notes": []}, {"category": "tone", "name": "Toner", "tag": "Tone \u00b7 15\u201330s", "product": "Anua Heartleaf 77% Soothing Toner \u2014 and Acwell Licorice pH Balancing Toner", "notes": []}, {"category": "tone", "name": "Hydrating Toner", "tag": "Tone \u00b7 15\u201330s", "product": "HaruHaru Probiotics Essence \u2014 or Medicube PDRN Pink Milky Toner", "notes": []}, {"category": "treat", "name": "Azelaic Acid", "tag": "Treat \u00b7 15\u201330s", "product": "Anua Azelaic Acid", "notes": []}, {"category": "treat", "name": "Growth Factor Serum", "tag": "Treat \u00b7 30\u201360s", "product": "Week 1 & 3: DRMTLGY Needle-less \u2014 or Week 2 & 4: Klairs EGF", "notes": ["Rotates weekly: Wk1\u2192DRMTLGY, Wk2\u2192Klairs EGF, Wk3\u2192DRMTLGY, Wk4\u2192Klairs EGF.", "<b>+ Device:</b> INIA Infuse mode right after, if using Tighten tonight."]}, {"category": "hydrate", "name": "Barrier Essence", "tag": "Hydrate \u00b7 15\u201330s", "product": "Manyo Panthetoin Barrier Essence", "notes": []}, {"category": "hydrate", "name": "Snail Mucin Essence", "tag": "Hydrate \u00b7 15\u201330s", "product": "COSRX Advanced Snail 96 Mucin Power Essence", "notes": []}, {"category": "treat", "name": "Firming Serum", "tag": "Treat \u00b7 15\u201330s", "product": "Medicube Triple Collagen Serum \u2014 or Mixsoon PDRN Collagen Serum", "notes": []}, {"category": "seal", "name": "Eye Cream", "tag": "Seal \u00b7 30\u201360s", "product": "Medicube Pink PDRN Eye Cream", "notes": []}, {"category": "seal", "name": "Moisturizer", "tag": "Seal \u00b7 1\u20132min", "product": "Madeca Time Reverse", "notes": []}, {"category": "seal", "name": "Lip Mask", "tag": "Seal \u00b7 optional \u00b7 last step", "product": "Use a lip mask or balm of your choice, if desired", "notes": []}]}, "fri-am": {"day": "Friday", "period": "AM", "theme": "Firming Morning", "goal": "Improve firmness, elasticity & collagen support \u2014 healthy aging, lightweight under SPF and makeup.", "steps": [{"category": "cleanse", "name": "Rinse", "tag": "Cleanse", "product": "Rinse with lukewarm water \u2014 cleansing wipe or gentle cleanser if needed", "notes": []}, {"category": "treat", "name": "Vitamin C", "tag": "Treat \u00b7 15\u201330s", "product": "Prequel Lucent-C as your everyday default \u2014 or Remedy Vitamin C for a lighter feel \u2014 or Medicube Deep Vita-C for extra strength", "notes": []}, {"category": "hydrate", "name": "Mist", "tag": "Hydrate \u00b7 15\u201330s", "product": "Biodance Collagen Peptides Jelly Serum Mist (default) \u2014 or COSRX Ceramide (Hydrium) Mist \u2014 or Klairs Ampoule Mist", "notes": []}, {"category": "tone", "name": "Brightening Toner", "tag": "Tone \u00b7 15\u201330s", "product": "Acwell Licorice pH Balancing", "notes": []}, {"category": "tone", "name": "Toner", "tag": "Tone \u00b7 15\u201330s", "product": "Numbuzin NAD+ PDRN Toner", "notes": []}, {"category": "tone", "name": "Centella Toner", "tag": "Tone \u00b7 15\u201330s", "product": "Centellian24 Madeca Dailypair Toner \u2014 milky", "notes": []}, {"category": "hydrate", "name": "Barrier Essence", "tag": "Hydrate \u00b7 15\u201330s", "product": "Manyo Panthetoin Barrier Essence", "notes": []}, {"category": "hydrate", "name": "Moisture Serum", "tag": "Hydrate \u00b7 15\u201330s", "product": "iUNIK Beta-Glucan Power Moisture Serum", "notes": []}, {"category": "treat", "name": "Brightening Serum", "tag": "Treat \u00b7 15\u201330s", "product": "Anua Niacinamide + TXA", "notes": []}, {"category": "treat", "name": "Peptide Serum", "tag": "Treat \u00b7 15\u201330s", "product": "Medicube Pink PDRN Peptide Serum", "notes": []}, {"category": "treat", "name": "Nourishing Serum", "tag": "Treat \u00b7 15\u201330s", "product": "Mixsoon Soybean Milk Serum", "notes": []}, {"category": "hydrate", "name": "Essence", "tag": "Hydrate \u00b7 30s", "product": "Numbuzin Bio Lifting-sil Essence", "notes": []}, {"category": "seal", "name": "Eye Cream", "tag": "Seal \u00b7 30s", "product": "Dr. Melaxin Eye Brightening Cream \u2014 or Belif Aqua Bomb Eye Gel", "notes": []}, {"category": "seal", "name": "Moisturizer", "tag": "Seal \u00b7 1\u20132min", "product": "Medicube Triple Collagen Moisturizer", "notes": []}, {"category": "seal", "name": "SPF", "tag": "Seal \u00b7 1min", "product": "Use your preferred SPF", "notes": []}]}, "fri-pm": {"day": "Friday", "period": "PM", "theme": "Firming Night", "goal": "Support skin renewal with retinal \u2014 protect your barrier, keep the night focused.", "steps": [{"category": "cleanse", "name": "Double Cleanse", "tag": "Cleanse \u00b7 60s", "product": "Anua Heartleaf Cleansing Oil, balm, or cleansing wipe \u2192 Mixsoon Cream Cleanser \u2014 or Haruharu Cleanser", "notes": []}, {"category": "hydrate", "name": "Caudalie Mist", "tag": "Hydrate \u00b7 7s", "product": "Caudalie Grape Water \u2014 spray on damp skin right after cleansing, before anything else", "notes": []}, {"category": "hydrate", "name": "Mist", "tag": "Hydrate \u00b7 15\u201330s", "product": "Biodance Collagen Peptides Jelly Serum Mist \u2014 or Dr. Althea 345 Relief Mist", "notes": []}, {"category": "tone", "name": "Calming Toner", "tag": "Tone \u00b7 15\u201330s", "product": "I'm From Mugwort Toner \u2014 and Anua Heartleaf 77% Soothing Toner", "notes": []}, {"category": "treat", "name": "Growth Factors", "tag": "Treat \u00b7 15\u201330s", "product": "The Ordinary GF15", "notes": []}, {"category": "tone", "name": "Toner", "tag": "Tone \u00b7 15\u201330s", "product": "Numbuzin NAD+ PDRN Glow Boosting Toner", "notes": []}, {"category": "tone", "name": "Centella Toner", "tag": "Tone \u00b7 15\u201330s", "product": "Centellian24 Madeca Dailypair Toner \u2014 milky", "notes": []}, {"category": "hydrate", "name": "Snail Mucin Essence", "tag": "Hydrate \u00b7 15\u201330s", "product": "COSRX Advanced Snail 96 Mucin Power Essence", "notes": []}, {"category": "treat", "name": "Retinal", "tag": "Treat \u00b7 15\u201330s", "product": "Prequel Retinal Renew Gel \u2014 or Remedy Healthy Aging Serum (retinol + retinaldehyde)", "notes": []}, {"category": "treat", "name": "Exosome Serum", "tag": "Treat \u00b7 15\u201330s", "product": "Exosome Hydro Glow Complex", "notes": []}, {"category": "hydrate", "name": "Barrier Support", "tag": "Hydrate \u00b7 15\u201330s", "product": "Manyo Panthetoin Barrier Essence", "notes": []}, {"category": "seal", "name": "Eye Cream", "tag": "Seal \u00b7 30s", "product": "Numbuzin No.9 NAD+ Retinol Volumetox Eye Cream", "notes": []}, {"category": "seal", "name": "Moisturizer", "tag": "Seal \u00b7 1min", "product": "Prequel Barrier Therapy", "notes": ["<b>+ Optional:</b> The Ordinary Rice Lipids last, to seal in if skin feels extra dry."]}, {"category": "treat", "name": "Neck & Jawline", "tag": "Treat \u00b7 optional", "product": "Anua Collagen Retinol Refining Gua Sha Cream", "notes": ["Neck, jawline & d\u00e9collet\u00e9 only \u2014 not for the face. Start 2\u20133x/week."]}, {"category": "seal", "name": "Lip Mask", "tag": "Seal \u00b7 optional \u00b7 last step", "product": "Use a lip mask or balm of your choice, if desired", "notes": []}]}, "sat-am": {"day": "Saturday", "period": "AM", "theme": "Brightening Morning", "goal": "Brighten tone, fade discoloration, boost radiance & protect \u2014 stay hydrated, balanced.", "steps": [{"category": "cleanse", "name": "Rinse", "tag": "Cleanse \u00b7 30\u201360s", "product": "Rinse with lukewarm water \u2014 cleansing wipe or gentle cleanser if needed", "notes": []}, {"category": "treat", "name": "Exosome Serum", "tag": "Treat \u00b7 15\u201330s", "product": "Exosome Hydro Glow Complex", "notes": []}, {"category": "treat", "name": "Vitamin C", "tag": "Treat \u00b7 30\u201360s", "product": "Prequel Lucent-C as your everyday default \u2014 or Remedy Vitamin C for a lighter feel \u2014 or Medicube Deep Vita-C for extra strength", "notes": ["<b>+ Optional:</b> sheet mask here, if it's your scheduled mask morning."]}, {"category": "hydrate", "name": "Mist", "tag": "Hydrate \u00b7 15\u201330s", "product": "Biodance Collagen Peptides Jelly Serum Mist (default) \u2014 or COSRX Ceramide (Hydrium) Mist \u2014 or Klairs Ampoule Mist", "notes": []}, {"category": "tone", "name": "Brightening Vitamin Toner", "tag": "Tone \u00b7 15\u201330s", "product": "Acwell Licorice pH Balancing \u2014 and Klairs Freshly Juiced Vitamin Essence", "notes": []}, {"category": "tone", "name": "Plumping Toner", "tag": "Tone \u00b7 15\u201330s", "product": "Haruharu Wonder Black Rice Hyaluronic Toner", "notes": []}, {"category": "tone", "name": "Centella Toner", "tag": "Tone \u00b7 15\u201330s", "product": "Centellian24 Madeca Dailypair Toner \u2014 milky", "notes": []}, {"category": "tone", "name": "Hydrating Toner", "tag": "Tone \u00b7 15\u201330s", "product": "HaruHaru Probiotics Essence \u2014 or Medicube PDRN Pink Milky Toner", "notes": []}, {"category": "hydrate", "name": "Barrier Essence", "tag": "Hydrate \u00b7 15\u201330s", "product": "Manyo Panthetoin Barrier Essence", "notes": []}, {"category": "treat", "name": "Brightening Serum", "tag": "Treat \u00b7 15\u201330s", "product": "Anua Niacinamide + TXA", "notes": []}, {"category": "treat", "name": "Hydration / Elasticity Serum", "tag": "Treat \u00b7 15\u201330s", "product": "Anua PDRN + HA", "notes": []}, {"category": "seal", "name": "Eye Cream", "tag": "Seal \u00b7 30s", "product": "Dr. Melaxin Eye Brightening Cream", "notes": []}, {"category": "seal", "name": "Moisturizer", "tag": "Seal \u00b7 1min", "product": "Anua 3+ Moisturizer", "notes": ["<b>+ Optional:</b> Vinoperfect serum here, if it fits your goals."]}, {"category": "seal", "name": "SPF", "tag": "Seal \u00b7 1min", "product": "Use your preferred SPF", "notes": []}]}, "sat-pm": {"day": "Saturday", "period": "PM", "theme": "Brightening Night", "goal": "Reduce pigmentation, fade dark spots & correct tone \u2014 boost radiance with your strongest ingredients.", "steps": [{"category": "cleanse", "name": "Double Cleanse", "tag": "Cleanse \u00b7 60\u201390s", "product": "Anua Heartleaf Cleansing Oil, balm, or cleansing wipe \u2014 then Mixsoon Cream Cleanser (or Haruharu Cleanser)", "notes": []}, {"category": "hydrate", "name": "Caudalie Mist", "tag": "Hydrate \u00b7 7s", "product": "Caudalie Grape Water \u2014 spray on damp skin right after cleansing, before anything else", "notes": []}, {"category": "treat", "name": "Weekly Treatment Pad", "tag": "Treat \u00b7 2min", "product": "Alternating weekly: Brightening Pad \u2014 or Medik8 Press & Glow", "notes": ["Brightening Pad has PHA + mild betaine salicylate \u2014 Medik8 is pure PHA, the gentlest of the two."]}, {"category": "hydrate", "name": "Recovery Mist", "tag": "Hydrate \u00b7 15\u201330s", "product": "Dear Klairs Blue EGF Calming Mist", "notes": []}, {"category": "hydrate", "name": "Hydration Mist", "tag": "Hydrate \u00b7 15\u201330s", "product": "Dr. Althea 345 Relief Cream Mist (default) \u2014 or COSRX Ceramide (Hydrium) Mist", "notes": []}, {"category": "tone", "name": "Brightening Toner", "tag": "Tone \u00b7 15\u201330s", "product": "Acwell Licorice Toner \u2014 and I'm From Rice Toner", "notes": []}, {"category": "tone", "name": "Hydrating Toner", "tag": "Tone \u00b7 15\u201330s", "product": "Klairs Supple Preparation Unscented Toner", "notes": []}, {"category": "hydrate", "name": "Hydration Layer", "tag": "Hydrate \u00b7 15\u201330s", "product": "Mixsoon Glacier Water HA", "notes": ["<b>+ Optional:</b> Biodance Jelly Mist anytime your skin feels tight."]}, {"category": "tone", "name": "Centella Toner", "tag": "Tone \u00b7 15\u201330s", "product": "Centellian24 Madeca Dailypair Toner \u2014 milky", "notes": []}, {"category": "hydrate", "name": "Barrier Essence", "tag": "Hydrate \u00b7 15\u201330s", "product": "Manyo Panthetoin Barrier Essence", "notes": []}, {"category": "treat", "name": "Brightening Serum", "tag": "Treat \u00b7 15\u201330s", "product": "Anua Niacinamide + TXA", "notes": []}, {"category": "treat", "name": "Peptide Serum", "tag": "Treat \u00b7 15\u201330s", "product": "Medicube Pink PDRN Peptide Serum", "notes": []}, {"category": "seal", "name": "Eye Cream", "tag": "Seal \u00b7 30s", "product": "Numbuzin No. 9 Eye Cream", "notes": []}, {"category": "seal", "name": "Moisturizer", "tag": "Seal \u00b7 1\u20132min", "product": "Medicube TXA Capsule Cream", "notes": ["<b>+ Optional:</b> Caudalie Vinoperfect while finishing your routine.", "<b>+ Optional:</b> The Ordinary Rice Lipids last, to seal in if skin feels extra dry."]}, {"category": "seal", "name": "Barrier Boost", "tag": "Seal \u00b7 if dry \u00b7 30s", "product": "COSRX Snail Mucin Cream", "notes": []}, {"category": "seal", "name": "Lip Mask", "tag": "Seal \u00b7 optional \u00b7 last step", "product": "Use a lip mask or balm of your choice, if desired", "notes": []}]}, "sun-am": {"day": "Sunday", "period": "AM", "theme": "Church Morning", "goal": "Hydration, smooth makeup application & glow \u2014 long wear all day.", "steps": [{"category": "cleanse", "name": "Rinse", "tag": "Cleanse", "product": "Rinse with lukewarm water \u2014 cleansing wipe or gentle cleanser if needed", "notes": []}, {"category": "treat", "name": "Toner Pads", "tag": "Treat \u00b7 1\u20132min", "product": "Medicube PDRN Toner Pads", "notes": []}, {"category": "treat", "name": "Vitamin C", "tag": "Treat \u00b7 15\u201330s", "product": "Prequel Lucent-C as your everyday default \u2014 or Remedy Vitamin C for a lighter feel \u2014 or Medicube Deep Vita-C for extra strength", "notes": []}, {"category": "hydrate", "name": "Mist", "tag": "Hydrate \u00b7 15\u201330s", "product": "Biodance Collagen Peptides Jelly Serum Mist \u2014 or COSRX Ceramide (Hydrium) Mist if dry", "notes": ["<b>+ Optional:</b> any of these mists may be reapplied over makeup during the day."]}, {"category": "tone", "name": "Brightening Toner", "tag": "Tone \u00b7 15\u201330s", "product": "I'm From Rice Toner \u2014 and Acwell Licorice pH Balancing", "notes": []}, {"category": "tone", "name": "Hydrating Toner", "tag": "Tone \u00b7 15\u201330s", "product": "Haruharu Wonder Black Rice Hyaluronic Toner", "notes": []}, {"category": "tone", "name": "Centella Toner", "tag": "Tone \u00b7 15\u201330s", "product": "Centellian24 Madeca Dailypair Toner \u2014 milky", "notes": []}, {"category": "hydrate", "name": "Essence", "tag": "Hydrate \u00b7 15\u201330s", "product": "Mixsoon Bean Essence", "notes": []}, {"category": "hydrate", "name": "Hydration Serum", "tag": "Hydrate \u00b7 15\u201330s", "product": "Anua PDRN + HA", "notes": []}, {"category": "seal", "name": "Eye Cream", "tag": "Seal \u00b7 30s", "product": "Dr. Melaxin Eye Brightening Cream", "notes": ["Let absorb 1\u20132 min before concealer to prevent creasing."]}, {"category": "seal", "name": "Moisturizer", "tag": "Seal \u00b7 1\u20132min", "product": "Mixsoon Bean Cream", "notes": []}, {"category": "seal", "name": "Tinted SPF", "tag": "Seal", "product": "DRMTLGY Tinted SPF \u2014 or Clinique Tinted SPF \u2014 or Est\u00e9e Lauder Hydra Rescue Foundation", "notes": ["Doubles as makeup \u2014 no separate foundation needed."]}, {"category": "seal", "name": "Wait, Then Finish Makeup", "tag": "Seal \u00b7 5\u201310min", "product": "Wait 5\u201310 minutes, then add any remaining makeup", "notes": ["Let each layer absorb before moving to the next for smooth application."]}]}, "sun-pm": {"day": "Sunday", "period": "PM", "theme": "Mask & Buffer Night", "goal": "Deeply hydrate, calm & strengthen barrier \u2014 flooding layers, supportive actives.", "steps": [{"category": "cleanse", "name": "Double Cleanse", "tag": "Cleanse \u00b7 60\u201390s", "product": "Anua Heartleaf Cleansing Oil, balm, or cleansing wipe, then Haruharu 5.5 Cleanser \u2014 or Medicube Whipped Cleanser", "notes": []}, {"category": "hydrate", "name": "Caudalie Mist", "tag": "Hydrate \u00b7 7s", "product": "Caudalie Grape Water \u2014 spray on damp skin right after cleansing, before anything else", "notes": []}, {"category": "tone", "name": "Hyaluronic Toner", "tag": "Tone \u00b7 15\u201330s", "product": "Haruharu Wonder Black Rice Hyaluronic Toner", "notes": ["<b>Optional:</b> Sheet mask here \u2014 leave on per package instructions, then pat in excess essence. Fine weekly for hydrating/peptide masks; space out any mask with stronger actives (exfoliating, retinol, AHA)."]}, {"category": "hydrate", "name": "Recovery Mist", "tag": "Hydrate \u00b7 15\u201330s", "product": "Dear Klairs Blue EGF Calming Mist", "notes": []}, {"category": "hydrate", "name": "Hydration Mist", "tag": "Hydrate \u00b7 15\u201330s", "product": "COSRX Ceramide (Hydrium) Mist \u2014 or Biodance Jelly Mist, 2\u20133 light layers \u2014 or Dr. Althea 345 Relief Mist", "notes": []}, {"category": "hydrate", "name": "Water Boost \u2014 Layer 3", "tag": "Hydrate \u00b7 15\u201330s", "product": "Mixsoon Glacier Water Hyaluronic Acid", "notes": []}, {"category": "hydrate", "name": "Toner \u2014 Layer 1", "tag": "Hydrate \u00b7 15\u201330s", "product": "Klairs Supple Preparation Unscented Toner \u2014 pat in", "notes": []}, {"category": "tone", "name": "Centella Toner", "tag": "Tone \u00b7 15\u201330s", "product": "Centellian24 Madeca Dailypair Toner \u2014 milky", "notes": []}, {"category": "hydrate", "name": "Barrier Essence", "tag": "Hydrate \u00b7 15\u201330s", "product": "Manyo Panthetoin Barrier Essence", "notes": []}, {"category": "treat", "name": "Centella Ampoule", "tag": "Treat \u00b7 if needed", "product": "SKIN1004 Madagascar Centella Ampoule", "notes": ["Add if skin needs extra nourishment."]}, {"category": "hydrate", "name": "Hydration Booster", "tag": "Hydrate \u00b7 15\u201330s", "product": "Anua PDRN + Hyaluron Serum", "notes": []}, {"category": "seal", "name": "Eye Cream", "tag": "Seal \u00b7 30s", "product": "Belif Aqua Bomb Eye Gel", "notes": []}, {"category": "seal", "name": "Moisturizer", "tag": "Seal \u00b7 1\u20132min", "product": "Madeca Time Reverse", "notes": []}, {"category": "seal", "name": "Lip Mask", "tag": "Seal \u00b7 optional \u00b7 last step", "product": "Use a lip mask or balm of your choice, if desired", "notes": []}]}};
+
+const PRODUCT_REGISTRY = {"Moisturizers":[["Prequel AM/PM Modern Moisturizer",["barrier","hydrating"]],["Prequel Barrier Therapy",["barrier","soothing"]],["Anua 3+ Moisturizer",["hydrating","brightening"]],["Dr. Althea 345 Relief Cream",["soothing","barrier"]],["Medicube Triple Collagen Cream",["firming","hydrating"]],["Mixsoon Bean Cream",["hydrating","barrier"]],["Madeca Time Reverse",["soothing","barrier"]],["Medicube TXA Niacinamide Capsule Cream",["brightening"]],["The Ordinary Rice Lipids",["barrier","hydrating"]]],"SPF":[["Clinique UV Solutions Hydrating",["spf","hydrating"]],["Prequel Mineral SPF",["spf"]],["Anua Zero Cast",["spf"]],["DRMTLGY Tinted Moisturizer",["spf"]],["Clinique Tinted Moisturizer",["spf"]],["Est\u00e9e Lauder Futurist Hydra Rescue",["spf","hydrating"]],["Beauty of Joseon Tinted Moisturizer",["spf","brightening"]]],"Toners":[["Acwell Licorice pH Balancing Toner",["brightening"]],["Anua Heartleaf 77% Soothing Toner",["soothing"]],["I'm From Mugwort Toner",["soothing"]],["I'm From Rice Toner",["brightening","hydrating"]],["Numbuzin NAD+ PDRN Toner",["regenerative"]],["Centellian24 Madeca Dailypair Toner",["soothing","barrier"]],["Medicube PDRN Pink Niacinamide Milky Toner",["regenerative","brightening"]],["Manyo Panthetoin Toner",["barrier","soothing"]],["Haruharu Wonder Black Rice Hyaluronic Toner",["hydrating"]],["Mixsoon Glacier Water HA",["hydrating"]],["Klairs Supple Preparation Unscented Toner",["hydrating","barrier"]],["Klairs Freshly Juiced Vitamin Essence",["brightening","antioxidant"]],["HaruHaru Probiotics Essence",["barrier","antioxidant"]]],"Mists":[["Klairs Ampoule Mist",["hydrating"]],["COSRX Ceramide (Hydrium) Mist",["barrier","hydrating"]],["Dr. Althea 345 Relief Cream Mist",["soothing","barrier"]],["Caudalie Grape Water",["hydrating","antioxidant"]],["Biodance Collagen Peptides Jelly Serum Mist",["hydrating","firming"]],["Dear Klairs Blue EGF Calming Mist",["soothing","regenerative"]],["Hypochlorous Acid Spray",["soothing"]]],"Eye Patches":[["COSRX The Peptide Collagen Hydrogel Eye Patches",["firming"]],["Pathology Night Repair Eye Patches",["regenerative"]],["Klairs Blue EGF Full Cover Eye Patches",["soothing","regenerative"]],["Skin Gen Hydrating Marine Algae Eye Patches",["hydrating"]]],"Toner Pads":[["Medicube 99% PDRN Toner Pads",["regenerative"]],["Jiyu Skin Cell Renewal Pad",["exfoliating"]],["Anua Niacinamide + TXA Toner Pads",["brightening"]]],"Retinol":[["Prequel Retinal Renew Gel",["firming"]],["Sungboon Editor Deep Collagen Retinol Capsule Cream",["firming"]],["Anua Visibly Firming Collagen Retinol Gua Sha Cream",["firming"]],["Remedy Healthy Aging Serum",["firming"]]],"Serums":[["SKIN1004 Madagascar Centella Ampoule",["soothing"]],["Medicube Triple Collagen Serum",["firming"]],["The Ordinary GF15",["regenerative"]],["Numbuzin Bio Lifting-sil Essence",["firming"]],["Exosome Hydro Glow Complex",["regenerative"]],["Klairs EGF Blue Serum",["regenerative","soothing"]],["Est\u00e9e Lauder Advanced Night Repair",["regenerative","antioxidant","firming"]],["Mixsoon Bean Essence",["hydrating","barrier"]],["Mixsoon Soybean Milk Serum",["hydrating"]],["Anua Azelaic Acid 10%",["brightening","soothing","exfoliating"]],["DRMTLGY Needle-less Growth Factor Serum",["regenerative"]],["Anua PDRN + Hyaluron 100+ Serum",["regenerative","hydrating"]],["Medicube PDRN Pink Peptide Serum",["regenerative","firming"]],["Anua Niacinamide + TXA 10% Serum",["brightening"]],["Ectoin Hydro-Barrier Serum",["barrier","hydrating"]],["Caudalie Vinoperfect",["brightening"]]],"Vitamin C":[["Prequel Lucent-C",["brightening","antioxidant"]],["Remedy Vitamin C Complex Serum",["brightening","antioxidant"]],["Medicube Deep Vita-C Ampoule",["brightening","antioxidant"]]],"Oil/Balm Cleansers":[["Anua Heartleaf Oil Cleanser",["cleansing"]],["Mixsoon Oil Cleanser",["cleansing"]],["Remedy Cleansing Balm",["cleansing"]],["Dr. Althea Cleansing Balm",["cleansing"]]],"Gentle Cleansers":[["Remedy Cream to Foam Cleanser",["cleansing"]],["Haruharu Black Rice Moisture 5.5 Cleanser",["cleansing"]],["Medicube PDRN Pink Niacinamide Whip Cleanser",["cleansing","brightening"]],["Mixsoon Cream Cleanser",["cleansing"]]],"Exfoliants":[["Medik8 Press & Glow",["exfoliating"]],["Dermalogica Daily Microfoliant",["exfoliating"]]],"Cleansing Wipes":[["Round Lab Dokdo Cleansing Tissue",["cleansing"]],["4AM Clean Sheets",["cleansing"]]],"Sheet Masks":[["Abib Gummy Sheet Collagen Milk Mask",["firming","hydrating"]],["Abib Gummy Sheet Madecassoside Mask",["soothing"]],["Arencia Holy Hyssop Mask",["soothing"]],["Biodance Bio Collagen Mask",["firming"]],["Biodance Hydro Ceramide-nol Mask",["barrier","hydrating"]],["Biodance Rejuvenating Caviar-PDRN Mask",["regenerative","firming"]],["Biodance Refreshing Sea Kelp Mask",["hydrating","antioxidant"]],["Deep Collagen Anti-Wrinkle Lifting Mask",["firming"]],["COSRX Advanced Snail Mucin Glass Glow Mask",["hydrating","barrier"]],["COSRX Alpha-Arbutin Discoloration Care Mask",["brightening"]],["COSRX Peptide Collagen Lifting Glow Hydrogel Mask",["firming"]],["Dr. Althea 345 Relief Cream Mask",["soothing","barrier"]],["Hanmi Pro Calm EGF PDRN Active Mask",["regenerative","soothing"]],["Medicube Deep Peptide Radiance Mask",["firming","brightening"]],["Medicube Kojic Acid Turmeric Brightening Mask",["brightening"]],["Mediheal Hyaluron+Panthenol Derma Synergy Mask",["hydrating","barrier"]],["Mediheal IPI Brightening Ampoule Mask",["brightening"]],["Mediheal Placenta Essential Mask",["regenerative"]],["Mixsoon Bean Collagen Hydrogel Mask",["firming","hydrating"]],["Mixsoon Centella Mask Pack",["soothing"]],["Numbuzin NAD Bio Lifting Mask",["regenerative","firming"]],["Round Lab Deep Collagen Firming Mask",["firming"]],["Round Lab Dokdo Hydrating Water Mask",["hydrating"]],["Vitamasques Glow Juicy Berries Mask",["antioxidant","brightening"]]],"Lip Masks":[["Abib Collagen Lip Mask",["firming","hydrating"]],["Nectar Life Vanilla Lip Mask",["hydrating"]],["Kind R Lip Mask",["hydrating"]],["COSRX Lip Sleep",["hydrating","barrier"]]]}
+;
+
+const DAY_ORDER = ["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"];
+const DAY_ABBR = {Monday:"Mon",Tuesday:"Tue",Wednesday:"Wed",Thursday:"Thu",Friday:"Fri",Saturday:"Sat",Sunday:"Sun"};
+const CARD_KEYS = {
+  Monday:{AM:"mon-am",PM:"mon-pm"}, Tuesday:{AM:"tue-am",PM:"tue-pm"},
+  Wednesday:{AM:"wed-am",PM:"wed-pm"}, Thursday:{AM:"thu-am",PM:"thu-pm"},
+  Friday:{AM:"fri-am",PM:"fri-pm"}, Saturday:{AM:"sat-am",PM:"sat-pm"},
+  Sunday:{AM:"sun-am",PM:"sun-pm"}
+};
+const CAT_LABEL = {cleanse:"Cleanse",tone:"Tone",treat:"Treat",brighten:"Brighten",hydrate:"Hydrate",seal:"Seal"};
+
+let routineData = null;
+let currentDay = "Monday";
+let currentPeriod = "AM";
+let editContext = null; // {cardKey, stepIdx}
+
+const DATA_VERSION = 32; // bump this whenever DEFAULT_DATA changes, to auto-refresh stale saved copies
+
+async function loadData(){
+  try{
+    const raw = localStorage.getItem('cabinet-routine-data');
+    const savedVersion = parseInt(localStorage.getItem('cabinet-data-version') || '0', 10);
+    if(!raw || savedVersion !== DATA_VERSION) throw new Error('stale or missing data');
+    routineData = JSON.parse(raw);
+  }catch(e){
+    routineData = JSON.parse(JSON.stringify(DEFAULT_DATA));
+    saveData(true);
+  }
+}
+function saveData(silent){
+  try{
+    localStorage.setItem('cabinet-routine-data', JSON.stringify(routineData));
+    localStorage.setItem('cabinet-data-version', String(DATA_VERSION));
+    if(!silent) showStatus('Saved.', false);
+    return true;
+  }catch(e){
+    console.error('save failed', e);
+    if(!silent) showStatus("Couldn't save — your browser's storage may be full or blocked.", true);
+    return false;
+  }
+}
+
+let statusTimer = null;
+function showStatus(msg, isError){
+  let el = document.getElementById('statusBanner');
+  if(!el){
+    el = document.createElement('div');
+    el.id = 'statusBanner';
+    el.style.position = 'fixed';
+    el.style.top = '0';
+    el.style.left = '0';
+    el.style.right = '0';
+    el.style.zIndex = '50';
+    el.style.padding = '10px 16px';
+    el.style.fontFamily = "'Space Mono',monospace";
+    el.style.fontSize = '12px';
+    el.style.textAlign = 'center';
+    document.body.appendChild(el);
+  }
+  el.style.background = isError ? '#7a3650' : '#3f5346';
+  el.style.color = '#f6f1e7';
+  el.textContent = msg;
+  el.style.display = 'block';
+  if(statusTimer) clearTimeout(statusTimer);
+  statusTimer = setTimeout(()=>{ el.style.display = 'none'; }, 4000);
+}
+
+function renderDayPicker(){
+  const el = document.getElementById('daypicker');
+  el.innerHTML = '';
+  DAY_ORDER.forEach(day=>{
+    const b = document.createElement('button');
+    b.className = 'day-btn' + (day===currentDay ? ' active':'');
+    b.textContent = DAY_ABBR[day];
+    b.onclick = ()=>{ currentDay = day; renderAll(); };
+    el.appendChild(b);
+  });
+}
+
+function renderPeriodPicker(){
+  const el = document.getElementById('periodpicker');
+  el.innerHTML = '';
+  ['AM','PM'].forEach(p=>{
+    const b = document.createElement('button');
+    b.className = 'period-btn' + (p===currentPeriod ? ' active':'');
+    b.textContent = p;
+    b.onclick = ()=>{ currentPeriod = p; renderPeriodPicker(); renderCard(); };
+    el.appendChild(b);
+  });
+}
+
+function renderCard(){
+  const key = CARD_KEYS[currentDay][currentPeriod];
+  const card = routineData[key];
+  document.getElementById('theme').textContent = card.theme;
+  document.getElementById('goal').innerHTML = '<b>Goal</b>' + card.goal;
+
+  const stepsEl = document.getElementById('steps');
+  stepsEl.innerHTML = '';
+  card.steps.forEach((step, idx)=>{
+    const div = document.createElement('div');
+    div.className = 'step';
+    div.setAttribute('data-cat', step.category);
+    let notesHtml = '';
+    step.notes.forEach(n=>{ notesHtml += `<div class="step-note">${n}</div>`; });
+    const isFirst = idx === 0;
+    const isLast = idx === card.steps.length - 1;
+    div.innerHTML = `
+      <div class="step-row">
+        <div class="step-name">${step.name}</div>
+        <div class="step-tag">${step.tag}</div>
+      </div>
+      <div class="step-product" data-idx="${idx}">${step.product}</div>
+      ${notesHtml}
+      <div class="step-controls">
+        <button class="step-ctrl-btn" data-action="up" ${isFirst ? 'disabled' : ''} aria-label="Move up">&#8593;</button>
+        <button class="step-ctrl-btn" data-action="down" ${isLast ? 'disabled' : ''} aria-label="Move down">&#8595;</button>
+        <button class="step-ctrl-btn step-delete-btn" data-action="delete" aria-label="Delete step">Delete</button>
+      </div>
+    `;
+    div.querySelector('.step-product').onclick = ()=> openEdit(key, idx);
+    div.querySelector('[data-action="up"]').onclick = ()=> moveStep(key, idx, -1);
+    div.querySelector('[data-action="down"]').onclick = ()=> moveStep(key, idx, 1);
+    div.querySelector('[data-action="delete"]').onclick = ()=> deleteStep(key, idx);
+    stepsEl.appendChild(div);
+  });
+
+  renderLegend(card);
+}
+
+async function moveStep(cardKey, idx, direction){
+  const steps = routineData[cardKey].steps;
+  const newIdx = idx + direction;
+  if(newIdx < 0 || newIdx >= steps.length) return;
+  const tmp = steps[idx];
+  steps[idx] = steps[newIdx];
+  steps[newIdx] = tmp;
+  saveData(true);
+  renderCard();
+}
+
+async function deleteStep(cardKey, idx){
+  const step = routineData[cardKey].steps[idx];
+  if(!confirm(`Delete "${step.name}" from this routine?`)) return;
+  routineData[cardKey].steps.splice(idx, 1);
+  saveData(true);
+  renderCard();
+  showStatus('Step deleted.', false);
+}
+
+function renderLegend(card){
+  const cats = [...new Set(card.steps.map(s=>s.category))];
+  const order = ['cleanse','tone','brighten','treat','hydrate','seal'];
+  const el = document.getElementById('legend');
+  el.innerHTML = '';
+  order.filter(c=>cats.includes(c)).forEach(c=>{
+    const item = document.createElement('div');
+    item.className = 'legend-item';
+    item.innerHTML = `<span class="legend-dot" style="background:var(--${c})"></span>${CAT_LABEL[c]}`;
+    el.appendChild(item);
+  });
+}
+
+function findMatches(productText){
+  // find all (cardKey, stepIdx) with an exact-match product string
+  const matches = [];
+  for(const key in routineData){
+    routineData[key].steps.forEach((s, idx)=>{
+      if(s.product === productText) matches.push({key, idx});
+    });
+  }
+  return matches;
+}
+
+function openEdit(cardKey, stepIdx){
+  editContext = {cardKey, stepIdx};
+  const step = routineData[cardKey].steps[stepIdx];
+  document.getElementById('editStepLabel').textContent = `${routineData[cardKey].day} ${routineData[cardKey].period} — ${step.name}`;
+  document.getElementById('editInput').value = step.product;
+
+  const matches = findMatches(step.product);
+  const scopeEl = document.getElementById('scopeChoice');
+  scopeEl.innerHTML = '';
+  if(matches.length > 1){
+    const optAll = document.createElement('div');
+    optAll.className = 'scope-opt selected';
+    optAll.dataset.scope = 'all';
+    optAll.innerHTML = `<div><b>Update everywhere (${matches.length} steps)</b><span>This exact product appears on ${matches.length} steps across your cards. Change all of them at once.</span></div>`;
+    const optOne = document.createElement('div');
+    optOne.className = 'scope-opt';
+    optOne.dataset.scope = 'one';
+    optOne.innerHTML = `<div><b>Just this step</b><span>Only update ${routineData[cardKey].day} ${routineData[cardKey].period} — ${step.name}.</span></div>`;
+    [optAll, optOne].forEach(o=>{
+      o.onclick = ()=>{
+        scopeEl.querySelectorAll('.scope-opt').forEach(x=>x.classList.remove('selected'));
+        o.classList.add('selected');
+      };
+    });
+    scopeEl.appendChild(optAll);
+    scopeEl.appendChild(optOne);
+  }
+
+  document.getElementById('editOverlay').classList.add('open');
+}
+
+async function saveEdit(){
+  const newVal = document.getElementById('editInput').value.trim();
+  if(!newVal){ return; }
+  const {cardKey, stepIdx} = editContext;
+  const oldVal = routineData[cardKey].steps[stepIdx].product;
+  const scopeEl = document.getElementById('scopeChoice');
+  const selected = scopeEl.querySelector('.scope-opt.selected');
+  const scope = selected ? selected.dataset.scope : 'one';
+
+  if(scope === 'all'){
+    const matches = findMatches(oldVal);
+    matches.forEach(m=>{ routineData[m.key].steps[m.idx].product = newVal; });
+  } else {
+    routineData[cardKey].steps[stepIdx].product = newVal;
+  }
+  closeEdit();
+  renderCard();
+  const ok = await saveData();
+}
+
+function closeEdit(){
+  document.getElementById('editOverlay').classList.remove('open');
+  editContext = null;
+}
+
+function renderRegistry(){
+  // Build usage counts by checking, for each product in the master registry,
+  // how many card steps actually reference it (substring match against step text).
+  const allSteps = [];
+  for(const key in routineData){
+    routineData[key].steps.forEach(s=> allSteps.push(s.product));
+  }
+
+  const el = document.getElementById('registryList');
+  el.innerHTML = '';
+
+  for(const category in PRODUCT_REGISTRY){
+    const catHead = document.createElement('div');
+    catHead.style.fontFamily = "'Space Mono',monospace";
+    catHead.style.fontSize = '10px';
+    catHead.style.letterSpacing = '0.08em';
+    catHead.style.textTransform = 'uppercase';
+    catHead.style.color = 'var(--ink-soft)';
+    catHead.style.marginTop = '14px';
+    catHead.style.marginBottom = '4px';
+    catHead.textContent = category;
+    el.appendChild(catHead);
+
+    const products = PRODUCT_REGISTRY[category].slice().sort((a,b)=> a[0].localeCompare(b[0]));
+    products.forEach(([name, tags])=>{
+      const count = allSteps.filter(p => p.includes(name)).length;
+      const item = document.createElement('div');
+      item.className = 'reg-item';
+      item.innerHTML = `<span>${name}</span><span class="rcount">${count}×</span>`;
+      el.appendChild(item);
+    });
+  }
+}
+
+async function resetToDefault(){
+  if(!confirm('Reset all routines to their original saved state? This undoes any edits you\'ve made.')) return;
+  routineData = JSON.parse(JSON.stringify(DEFAULT_DATA));
+  await saveData();
+  renderCard();
+}
+
+function renderAll(){
+  renderDayPicker();
+  renderPeriodPicker();
+  renderCard();
+}
+
+document.getElementById('editClose').onclick = closeEdit;
+document.getElementById('editCancel').onclick = closeEdit;
+document.getElementById('editSave').onclick = saveEdit;
+document.getElementById('registryBtn').onclick = ()=>{ renderRegistry(); document.getElementById('registryOverlay').classList.add('open'); };
+document.getElementById('registryClose').onclick = ()=> document.getElementById('registryOverlay').classList.remove('open');
+document.getElementById('resetBtn').onclick = resetToDefault;
+
+const FUNCTION_LABELS = {
+  hydrating: "Hydrating", barrier: "Barrier Repair", soothing: "Soothing",
+  brightening: "Brightening / Dark Spots", firming: "Firming / Collagen",
+  regenerative: "Regenerative", exfoliating: "Exfoliating",
+  antioxidant: "Antioxidant", cleansing: "Cleansing", spf: "SPF"
+};
+let activeFunctionTag = 'hydrating';
+
+function renderFunctionTabs(){
+  const el = document.getElementById('functionTabs');
+  el.innerHTML = '';
+  Object.entries(FUNCTION_LABELS).forEach(([tag,label])=>{
+    const b = document.createElement('button');
+    b.className = 'day-btn' + (tag===activeFunctionTag ? ' active':'');
+    b.textContent = label;
+    b.style.fontSize = '10px';
+    b.onclick = ()=>{ activeFunctionTag = tag; renderFunctionTabs(); renderFunctionList(); };
+    el.appendChild(b);
+  });
+}
+
+function renderFunctionList(){
+  const el = document.getElementById('functionList');
+  el.innerHTML = '';
+  for(const category in PRODUCT_REGISTRY){
+    const matches = PRODUCT_REGISTRY[category].filter(([name, tags])=> tags.includes(activeFunctionTag));
+    if(matches.length === 0) continue;
+    const catHead = document.createElement('div');
+    catHead.style.fontFamily = "'Space Mono',monospace";
+    catHead.style.fontSize = '10px';
+    catHead.style.letterSpacing = '0.08em';
+    catHead.style.textTransform = 'uppercase';
+    catHead.style.color = 'var(--ink-soft)';
+    catHead.style.marginTop = '14px';
+    catHead.style.marginBottom = '4px';
+    catHead.textContent = category;
+    el.appendChild(catHead);
+    matches.forEach(([name, tags])=>{
+      const item = document.createElement('div');
+      item.className = 'reg-item';
+      const otherTags = tags.filter(t=>t!==activeFunctionTag).map(t=>FUNCTION_LABELS[t]).join(', ');
+      item.innerHTML = `<span>${name}</span><span class="rcount">${otherTags}</span>`;
+      el.appendChild(item);
+    });
+  }
+}
+
+document.getElementById('functionBtn').onclick = ()=>{
+  renderFunctionTabs();
+  renderFunctionList();
+  document.getElementById('functionOverlay').classList.add('open');
+};
+document.getElementById('functionClose').onclick = ()=> document.getElementById('functionOverlay').classList.remove('open');
+
+(async ()=>{
+  await loadData();
+  renderAll();
+})();
+</script>
+</body>
+</html>
